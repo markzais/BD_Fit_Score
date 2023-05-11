@@ -1,15 +1,23 @@
 library(dplyr)
 library("glm2")
 #library(tidyverse)
+library(tidymodels)
 
+# Import the data
 data <- read.csv("20230501_i3_Pipeline.csv")
+
+#################
+# PREP THE DATA #
+#################
 
 # Remove these columns
 df1 <- data[ , !names(data) %in%
-                c("GovWin.ID","Capture.Lead","Include.in.Moneyball","Expected.RFP.Release","Must.Win","Status","Actual.RFP.Release",
-                  "Award.Date","BD_Sales.Lead","Contracts.POC","Estimated.Start.Date","Modified.By","Moneyball","Prime.POC",
-                  "Prime.POC.Email","RFI.or.IWP","Proposal.or.EWP.Due","Proposals.POC","TA.completed","Submission.Date",
-                  "Estimated.Completion.Date","NAME.1","Solicitation..","Solicitation.Date","Technical.POC")]
+                c("ID","NAME","GovWin.ID","Capture.Lead","Include.in.Moneyball","Expected.RFP.Release",
+                  "Prime.Contractor","Must.Win","Status","Actual.RFP.Release","Award.Date",
+                  "BD_Sales.Lead","Contract.Type","Contract.Vehicle","Contracts.POC","Estimated.Start.Date","Modified.By",
+                  "Moneyball","NAICS", "Primary.Agency","Prime.POC","Prime.POC.Email","RFI.or.IWP","Proposal.or.EWP.Due",
+                  "Proposals.POC","TA.completed","Submission.Date","Estimated.Completion.Date","NAME.1",
+                  "Solicitation..","Solicitation.Date","Technical.POC")]
 
 # Add a new column Result column that is 1 for "WON" and 0 for all else.
 df1$Result <- with(df1, ifelse(Stage == "WON", 1, 0))
@@ -31,29 +39,82 @@ df2$Win.Probability = as.integer(sub("%", "",df2$Win.Probability))
 df2$Contract.Period.Months <- as.numeric(df2$Contract.Period.Months)
 
 str(df2) # View structure of data frame
+
+#Convert the target variable to a factor
+df2$Result = as.factor(df2$Result)
+
+##################
+# VIEW SOME DATA #
+##################
+
+# # Plot the Result against one variable [Contract Type]
+# ggplot(df2, aes(Contract.Type, fill = Result)) +
+#   geom_bar() + coord_flip()
+
+
+# Plot the Result against one variable [Portfolio]
+ggplot(df2, aes(Portfolio, fill = Result)) +
+  geom_bar() + coord_flip()
+
+##################
+# FIT THE MODEL  #
+##################
+
+# Split data in training and test sets
+set.seed(509)
+split <- initial_split(df2, prop = 0.8, strata = Result)
+  train <- split %>% training()
+  test <- split %>% testing()
+
+# Train a model
+model <- logistic_reg(mixture = double(1), penalty = double(1)) %>%
+  set_engine("glmnet") %>%
+  set_mode("classification") %>%
+  fit(Result ~ ., data=train)
+
+# View summary of model
+tidy(model)
+
+
+# Make predictions
+pred_class <- predict(model, new_data = test, type = "class")
+
+pred_proba <- predict(model, new_data = test, type = "prob")
+
+results <- test %>% select(Result) %>% bind_cols(pred_class, pred_proba)
+
+accuracy(results, truth = Result, estimate = .pred_class)
+
+# Create confusion matrix
+conf_mat(results, truth = Result,
+         estimate = .pred_class)
+
+
+###############################
+# LETS TRY A DIFFERENT METHOD #
+###############################  
+
+# Remove these columns
+df3 <- data[ , !names(data) %in%
+               c("ID","NAME","GovWin.ID","Capture.Lead","Include.in.Moneyball","Expected.RFP.Release",
+                 "Prime.Contractor","Must.Win","Status","Actual.RFP.Release","Award.Date",
+                 "BD_Sales.Lead", "Contract.Vehicle","Contracts.POC","Estimated.Start.Date","Modified.By",
+                 "Moneyball","NAICS", "Prime.POC","Prime.POC.Email","RFI.or.IWP","Proposal.or.EWP.Due",
+                 "Proposals.POC","TA.completed","Submission.Date","Estimated.Completion.Date","NAME.1",
+                 "Solicitation..","Solicitation.Date","Technical.POC")]
+
+# Add a new column Result column that is 1 for "WON" and 0 for all else.
+df3$Result <- with(df3, ifelse(Stage == "WON", 1, 0))
+
 predictors <- c("Portfolio", "Business.Unit", "i3.Role", "Total.Value", "Our.Value", "Win.Probability", 
                 "Competition.Type", "Contract.Type", "Customer.Type","Primary.Agency","Contract.Period.Months","CPEG") 
 response <- "Result" 
 
-summary(df2) # View summary
+summary(df3) # View summary
 
-
-# # Fit the linear regression model using all predictor variables
-# fit <- lm(data[[response]] ~ data[[predictors[1]]] + data[[predictors[2]]] + data[[predictors[3]]] + data[[predictors[4]]] 
-#           + data[[predictors[5]]] + data[[predictors[6]]] + data[[predictors[7]]] + data[[predictors[8]]] + data[[predictors[9]]] 
-#           + data[[predictors[10]]] + data[[predictors[11]]] + data[[predictors[12]]] + data[[predictors[13]]], data = df2)
-# 
-# # Drop predictor variables with high p-values
-# while (any(summary(fit)$coefficients[-1,4] > 0.05)) { # Drop variables one at a time until no variables have a p-value > 0.05
-#   drop_var <- names(summary(fit)$coefficients[-1,4])[which.max(summary(fit)$coefficients[-1,4])] # Find the variable with the highest p-value
-#   predictors <- predictors[predictors != drop_var] # Drop the variable from the list of predictors
-#   fit <- lm(data[[response]] ~ data[[predictors[1]]] + data[[predictors[2]]] + data[[predictors[3]]] + data[[predictors[4]]]
-#             + data[[predictors[5]]] + data[[predictors[6]]] + data[[predictors[7]]] + data[[predictors[8]]] + data[[predictors[9]]]
-#             + data[[predictors[10]]] + data[[predictors[11]]] + data[[predictors[12]]] + data[[predictors[13]]], data = df2) # Fit the model with the remaining predictors
-# }
 
 fit.full <- glm2(Result ~ Portfolio + i3.Role + Competition.Type + Contract.Type + Customer.Type + Primary.Agency
-           + Contract.Period.Months + CPEG, data = df2, family=binomial())
+           + Contract.Period.Months + CPEG, data = df3, family=binomial())
 
 # Print the summary of the model to check the results
 summary(fit.full)
@@ -61,13 +122,14 @@ summary(fit.full)
 
 #fit.reduced <- glm2(Result ~ Portfolio + i3.Role + Contract.Type + Customer.Type + Contract.Period.Months, data = df2, family=binomial())
 
-fit.reduced <- glm2(Result ~ Portfolio + Contract.Type + Customer.Type + Contract.Period.Months + CPEG, data = df2, family=binomial())
+fit.reduced <- glm2(Result ~ Portfolio + Contract.Type + Customer.Type + Contract.Period.Months + CPEG, data = df3, family=binomial())
 
 # Print the summary of the model to check the results
 summary(fit.reduced)
 
 # Run chi-square test with anova function in R to compared between first and second model
 # to see which model explains our response variable better.
+# Non-significant p-value (>0.05) means that the second model fits as well as the full model.
 anova(fit.reduced, fit.full, test="Chisq") 
 
 coef(fit.reduced)
@@ -75,6 +137,7 @@ exp(coef(fit.reduced))
 
 model<- fit.reduced
 
+### Make a new prediction ####
 #define new observation
 newdata = data.frame(Portfolio = "CREWS", Contract.Type = "TASKORDER", Customer.Type = "RC", Contract.Period.Months = 48, CPEG = "Expand")
 
