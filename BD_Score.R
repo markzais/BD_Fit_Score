@@ -29,6 +29,9 @@ df1$Customer.Type[df1$Customer.Type == "RC - RFQ"] <- "RC"
 # Remove records with Stages other than "WON", "LOST", or "CANCEL"
 df2 <- df1[!(df1$Stage=="INACTIVE"|df1$Stage=="PROPSUB"|df1$Stage=="CAPTURE"|df1$Stage=="PROPPREP"|df1$Stage=="QUAL"|df1$Stage=="IDENT"),]
 
+# Remove Stage column
+df2 <- df2[ , !names(df2) %in% c("Stage")]
+
 str(df2) # View structure of data frame
 
 # Convert columns from Characters to Currency, Percentages, or Numbers
