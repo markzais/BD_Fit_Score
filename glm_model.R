@@ -56,7 +56,7 @@ response <- "Result"
 
 
 fit.full <- glm2(Result ~ Portfolio + i3.Role + Competition.Type + Contract.Type + Customer.Type + Primary.Agency
-                 + Contract.Period.Months + CPEG, data = df, family=binomial())
+                 + Contract.Period.Months + CPEG + Our.Value, data = df, family=binomial())
 
 # Print the summary of the model to check the results
 summary(fit.full)
