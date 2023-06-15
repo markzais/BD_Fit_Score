@@ -2,19 +2,20 @@ library(dplyr)
 library("glm2")
 #library(tidyverse)
 library(tidymodels)
+library(ggplot2)
+library(gridExtra)
 
 # Import the data
-data <- read.csv("20230501_i3_Pipeline.csv")
+data <- read.csv("i3_Pipeline.csv")
 
 # Remove these columns
 df <- data[ , !names(data) %in%
                c("ID","NAME","GovWin.ID","Capture.Lead","Include.in.Moneyball","Expected.RFP.Release",
                  "Prime.Contractor","Must.Win","Status","Actual.RFP.Release","Award.Date",
                  "BD_Sales.Lead", "Contract.Vehicle","Contracts.POC","Estimated.Start.Date","Modified.By",
-                 "Moneyball","NAICS", "Prime.POC","Prime.POC.Email","RFI.or.IWP","Proposal.or.EWP.Due",
+                 "Moneyball", "Prime.POC","Prime.POC.Email","RFI.or.IWP","Proposal.or.EWP.Due",
                  "Proposals.POC","TA.completed","Submission.Date","Estimated.Completion.Date","NAME.1",
                  "Solicitation..","Solicitation.Date","Technical.POC")]
-
 
 # Add a new column Result column that is 1 for "WON" and 0 for all else.
 df$Result <- with(df, ifelse(Stage == "WON", 1, 0))
@@ -28,9 +29,10 @@ df <- df[!(df$Stage=="INACTIVE"|df$Stage=="PROPSUB"|df$Stage=="CAPTURE"|df$Stage
 # Remove Stage column
 df <- df[ , !names(df) %in% c("Stage")]
 
+
 str(df) # View structure of data frame
 
-# Convert columns from Characters to Currency, Percentages, or Numbers
+# Convert columns from Characters, Currency & Percentages to Numbers
 df$Total.Value <- as.numeric(gsub('[$,]', '', df$Total.Value))
 df$Our.Value <- as.numeric(gsub('[$,]', '', df$Our.Value))
 df$Weighted.Value <- as.numeric(gsub('[$,]', '', df$Weighted.Value))
@@ -39,9 +41,12 @@ df$Contract.Period.Months <- as.numeric(df$Contract.Period.Months)
 
 str(df) # View structure of data frame
 
-# 
-# #Convert the target variable to a factor
-# df$Result = as.factor(df$Result)
+# # Create a picture (png) of the first 10 rows for PowerPoint slides
+# temp <- head(df,10)
+# png("temp.png", height=300, width=1500)
+# p<-tableGrob(temp)
+# grid.arrange(p)
+# dev.off()
 
 # Split data in training and test sets
 set.seed(509)
@@ -49,20 +54,20 @@ split <- initial_split(df, prop = 0.8, strata = Result)
 train <- split %>% training()
 test <- split %>% testing()
 
+# predictors <- c("Portfolio", "Business.Unit", "i3.Role", "Total.Value", "Our.Value", "Win.Probability", 
+#                 "Competition.Type", "Contract.Type", "Customer.Type","Primary.Agency","Contract.Period.Months","CPEG") 
+# response <- "Result" 
 
-predictors <- c("Portfolio", "Business.Unit", "i3.Role", "Total.Value", "Our.Value", "Win.Probability", 
-                "Competition.Type", "Contract.Type", "Customer.Type","Primary.Agency","Contract.Period.Months","CPEG") 
-response <- "Result" 
-
-
-fit.full <- glm2(Result ~ Portfolio + i3.Role + Competition.Type + Contract.Type + Customer.Type + Primary.Agency
+fit.full <- glm2(Result ~ Portfolio + i3.Role + Competition.Type + Contract.Type + Customer.Type +  NAICS + Primary.Agency
                  + Contract.Period.Months + CPEG + Our.Value, data = df, family=binomial())
 
 # Print the summary of the model to check the results
 summary(fit.full)
 
 # Reduce the number of variables used in the model.
-fit.reduced <- glm2(Result ~ Portfolio + Contract.Type + Customer.Type + Contract.Period.Months + CPEG, data = df, family=binomial())
+# fit.reduced <- glm2(Result ~ Portfolio + Contract.Type + Customer.Type + NAICS + Contract.Period.Months + CPEG, data = df, family=binomial())
+fit.reduced <- glm2(Result ~ Portfolio + Contract.Type + Customer.Type + NAICS + Contract.Period.Months, data = df, family=binomial())
+
 
 # Print the summary of the model to check the results
 summary(fit.reduced)
@@ -77,14 +82,51 @@ exp(coef(fit.reduced))
 
 model<- fit.reduced
 
+# View summary of model
+tidy(model)
+
 newdata = test
 
 # Turn off scientific notation
 options(scipen = 999)
 
-#use model to predict value of am
+#use model to predict value of a win
 newdata$prob <- predict.glm(model, newdata, type="response")
 
 # Check for overdispersion
 # If the ratio considerably larger than 1, then it indicates that we have an overdispersion issue.
 deviance(fit.reduced)/df.residual(fit.reduced) 
+
+#################################
+#    Model Method #2            #
+#################################
+
+df2 <- df
+
+#Convert the target variable to a factor
+df2$Result = as.factor(df2$Result)
+
+# Split data in training and test sets
+set.seed(509)
+split <- initial_split(df2, prop = 0.8, strata = Result)
+train2 <- split %>% training()
+test2 <- split %>% testing()
+
+# Train a model
+model2 <- logistic_reg(mixture = double(1), penalty = double(1)) %>%
+  set_engine("glmnet") %>%
+  set_mode("classification") %>%
+  fit(Result ~ ., data=train2)
+
+# Make predictions
+pred_class <- predict(model2, new_data = test2, type = "class")
+
+pred_proba <- predict(model2, new_data = test2, type = "prob")
+
+results <- test2 %>% select(Result) %>% bind_cols(pred_class, pred_proba)
+
+accuracy(results, truth = Result, estimate = .pred_class)
+
+# Create confusion matrix
+conf_mat(results, truth = Result,
+         estimate = .pred_class)

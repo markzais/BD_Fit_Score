@@ -46,10 +46,10 @@ fluidPage(theme = "mystyle.css",
                       box(width = 12,
                           includeMarkdown("www/instructions.md")
                       ),
-                      # 
-                      # box(width = 12,
-                      #     HTML('<img src="mission.png" height="200" width=100%>')
-                      # ),
+
+                      box(width = 12,
+                          HTML('<img src="HQ.png" height="200" width=100%>')
+                      ),
                       fluidRow(
                         column(width = 6,
                           box(width = NULL,
@@ -73,7 +73,7 @@ fluidPage(theme = "mystyle.css",
                       fluidRow(
                         column(width = 6,
                                box(width = NULL,
-                                   title = tagList(shiny::icon("keyboard", lib = "font-awesome")," Parameters"), status = "primary", solidHeader = TRUE,
+                                   title = tagList(shiny::icon("keyboard", lib = "font-awesome"),"New Opportunity: Parameters"), status = "primary", solidHeader = TRUE,
                                    splitLayout(
                                      numericInput("contractMonths", label = "Contract Period Months",
                                                   value = 12, min = 1, max = 120, step = 1),
@@ -86,7 +86,7 @@ fluidPage(theme = "mystyle.css",
                                    )
                                ),
                                box(width = NULL,
-                                   title = tagList(shiny::icon("keyboard")," Parameters"), status = "primary", solidHeader = TRUE,
+                                   title = tagList(shiny::icon("keyboard"),"New Opportunity: Parameters"), status = "primary", solidHeader = TRUE,
                                    splitLayout(
                                      selectInput("portfolio", label ="Portfolio", choices = c("CORP" = "corp", "CREWS"= "crews",
                                                                                               "ESI" = "esi", "Orlando" = "orlando"),
@@ -98,7 +98,7 @@ fluidPage(theme = "mystyle.css",
                                    )
                                ),
                                box(width = NULL,
-                                   title = tagList(shiny::icon("keyboard")," Parameters"), status = "primary", solidHeader = TRUE,
+                                   title = tagList(shiny::icon("keyboard"),"New Opportunity: Parameters"), status = "primary", solidHeader = TRUE,
                                    splitLayout(
                                      selectInput("competitionType", label ="Competition Type", choices = c("F&O" = "fo", "SBSA"= "sbsa",
                                                                                                            "Sole Source" = "ss", "TBD" = "tbd")),
@@ -110,7 +110,7 @@ fluidPage(theme = "mystyle.css",
                                ),
                                
                                box(width = NULL,
-                                   title = tagList(shiny::icon("cloud-upload")," Load Data and Parameters"), status = "primary", solidHeader = TRUE,
+                                   title = tagList(shiny::icon("cloud-upload"),"Train a New Model: Load Data and Parameters"), status = "primary", solidHeader = TRUE,
                                    
                                    # This style tag is used to group the import text and checkmark together
                                    tags$head(tags$style("#container * { display: inline;vertical-align:top}")),

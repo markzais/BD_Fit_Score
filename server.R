@@ -1,10 +1,10 @@
 server <- function(input, output, session){
   
-  template <- read.csv(paste(path, "/", "i3_Pipeline", ".csv", sep = ""),
-                        as.is = T, header = T)
+  # template <- read.csv(paste(path, "/", "i3_Pipeline", ".csv", sep = ""),
+  #                       as.is = T, header = T)
 
   print("Does this thing work?")
-
+  print("test")
   
   #This function is used to download the template CSV file
   output$downloadTemplate <- downloadHandler(
@@ -31,22 +31,13 @@ server <- function(input, output, session){
 
   # The event executes when the "Load Parameters" button is selected
   obs2 <- observeEvent(input$load,{
-
+print("test")
     # p <- 5 # Number of years
     output$statusUpdate <- renderText("text-warning")
 
     # # Convert multiplier values to numeric
     K_Months <- as.numeric(input$contractMonths)
-    # b2 <- as.numeric(input$budget2)
-    # b3 <- as.numeric(input$budget3)
-    # b4 <- as.numeric(input$budget4)
-    # b5 <- as.numeric(input$budget5)
-    #
-    # budget <- matrix(c(b1,b2,b3,b4,b5),p,1) # Multiplier matrix
-    #
-    # w1 <- as.numeric(input$CBPLweight)
-    # w2 <- as.numeric(input$Rankweight)
-    #
+   
     inputData <- inputData_temp()
     inputData[is.na(inputData)] <- NA 
     #
@@ -121,186 +112,7 @@ test
   # # Model uses the variable from "fit.reduced" in glm_model script.
   # logit <- glm2(Result ~ Portfolio + Contract.Type + Customer.Type + Contract.Period.Months + CPEG, data = df, family=binomial())
   # 
-  
 
-
-   #   
-  #   # projectNumber <- inputData[,1] # Read data from 1st column of inputData
-  #   # projectTitle <- inputData[,2] # Read data from 2nd column of inputData
-  #   # location <- inputData[,3] # Read data from 3rd column of inputData
-  #   # misProgram <- inputData[,4] # Read data from 4th column of inputData
-  #   # pomSponsor <- inputData[,5] # Read data from 5th column of inputData
-  #   # CBPL <- inputData[,6] # Read data from 6th column of inputData
-  #   # Rank <- inputData[,7] # Read data from 7th column of inputData
-  #   # tempScores <- (w1*CBPL) + (w2*Rank) # Add CBPL and Rank
-  #   # tempcosts <- inputData[,8] # Read data from 8th column of inputData
-  #   # costs <-t(tempcosts) # Transpose cost data
-  #   # must_fund_temp <- inputData[,9:13] # Read data from 9th-13th columns of inputData
-  #   # must_fund <- data.matrix(must_fund_temp) # Convert to a data matrix
-  #   # noEarlier_temp <- inputData[,14:18] # Read data from 14th-18th columns of inputData
-  #   # noEarlier <- data.matrix(noEarlier_temp) # Convert to a data matrix
-  #   # noEarlier[noEarlier == 0] <- -1 # Replace zeroes with -1
-  #   # desiredYear <- inputData[,19] # Read data from 19th column of inputData ## JGD 20190221 changed the business rule to desired year
-  #   # # businessRule_temp <- inputData[,19] # Read data from 19th column of inputData ## JGD 20192021 commented out
-  #   # # businessRule_temp <- replicate(m, 0) # Create a 0 vector of size m ## JGD 20190221 added
-  #   # # businessRule <- data.matrix(businessRule_temp) # Convert to a data matrix   ## Commented out MZ 02/22/2019
-  #   # previousProgram <- inputData[,20] # Read data from 20th column of inputData
-  #   # PDS	<- inputData[,21:22] # Read data from 21st-22nd columns of inputData
-  #   # PND1 <- inputData[,23:24]	# Read data from 23rd-24th columns of inputData
-  #   # PND2 <- inputData[,25:26] # Read data from 25th-26th columns of inputData
-  #   # CEQOM	<- inputData[,27:28] # Read data from 27th-28th columns of inputData
-  #   # CEQPROC	<- inputData[,29:30] # Read data from 29th-30th columns of inputData
-  #   # C4IOM	<- inputData[,31:32] # Read data from 31st-32nd columns of inputData
-  #   # C4IPROC	<- inputData[,33:34] # Read data from 33rd-34th columns of inputData
-  #   
-  #   
-  #   # ################################################
-  #   # ## Descriptive Statistics
-  #   # ################################################
-  #   # 
-  #   # # Collapse must fund columns and convert to FY
-  #   # must_fund_fy <- matrix(NA,m,1)
-  #   # for (i in 1:m){
-  #   #   for(j in 1:p){
-  #   #     if(must_fund_temp[i,1]==1){
-  #   #       must_fund_fy[i] = y
-  #   #     }
-  #   #     if(must_fund_temp[i,2]==1){
-  #   #       must_fund_fy[i] = y+1
-  #   #     }
-  #   #     if(must_fund_temp[i,3]==1){
-  #   #       must_fund_fy[i] = y+2
-  #   #     }
-  #   #     if(must_fund_temp[i,4]==1){
-  #   #       must_fund_fy[i] = y+3
-  #   #     }
-  #   #     if(must_fund_temp[i,5]==1){
-  #   #       must_fund_fy[i] = y+4
-  #   #     }
-  #   #   }
-  #   # }
-  #   # 
-  #   # # Sum the rows of noEarlier_temp
-  #   # netSum <- rowSums(noEarlier_temp)
-  #   # 
-  #   # descriptiveData <- data.frame(projectNumber, projectTitle, pomSponsor, CBPL, Rank, tempcosts, tempScores, must_fund_fy, netSum)
-  #   # 
-  #   # # Create table of just must fund projects
-  #   # mustFundProjects <- subset(descriptiveData, !is.na(must_fund_fy))
-  #   # 
-  #   # # Bar plot of Must Fund Costs by Year, Colored by Sponsor
-  #   # output$descriptive2 <- renderPlot({  
-  #   #   ggplot(mustFundProjects, aes(x = must_fund_fy, y = tempcosts, fill = pomSponsor)) + 
-  #   #     ggtitle("Must Fund Costs by Fiscal Year") +
-  #   #     geom_bar(stat="identity", position = "stack") + scale_y_continuous(labels = dollar) +
-  #   #     xlab("Must Fund (FY)") + ylab("Cost ($)")
-  #   # })
-  #   # # Bar plot of Must Fund Project Counts by Year, Colored by Sponsor
-  #   # output$descriptive1 <- renderPlot({
-  #   #   ggplot(mustFundProjects, aes(as.character(must_fund_fy), fill = pomSponsor)) + # JGD 20190301 added as.character to make must_fund_fy categorical 
-  #   #     ggtitle("Must Fund Project Counts by Fiscal Year") +
-  #   #     geom_bar(stat="count", position = "stack") +
-  #   #     xlab("Must Fund (FY)") + ylab("Count")
-  #   # })
-  #   # 
-  #   # # Create table of projects with NET dates within FYDP
-  #   # # feasibleProjects <- subset(descriptiveData, netSum > 0)
-  #   # feasibleProjects <- descriptiveData %>% filter(netSum > 0)# , desiredYear < y+5) ## JGD 20190221 added a filter to exclude projects desired outside the FYDP
-  #   # 
-  #   # # Scatterplot of Scores vs Costs, Colored by Sponsor
-  #   # output$descriptive3 <- renderPlotly({
-  #   #   g <- ggplot() +
-  #   #     geom_point(data=feasibleProjects, aes(x=tempScores, y=tempcosts, color = pomSponsor,
-  #   #                                           text = paste('Project: ', feasibleProjects$projectTitle,
-  #   #                                                        '<br>Number: ', feasibleProjects$projectNumber,
-  #   #                                                        '<br>Score: ', format(feasibleProjects$tempScores, digits = 3),
-  #   #                                                        '<br>Cost: $', format(feasibleProjects$tempcosts, big.mark = ",")))) +
-  #   #     xlab("Score") + ylab("Cost ($)") + labs(colour="") +
-  #   #     theme(panel.background = element_rect(fill = "darkgray",
-  #   #                                           colour = "black",
-  #   #                                           size = 0.5, linetype = "solid")) ## JGD 20190219
-  #   #   ggplotly(g, tooltip = "text", dynamicTicks = TRUE) %>%
-  #   #     layout(title = 'Score vs. Cost',
-  #   #            yaxis = list(zeroline = FALSE, showgrid = FALSE),
-  #   #            xaxis = list(zeroline = FALSE, showgrid = FALSE),
-  #   #            font = list(
-  #   #              family = "arial",
-  #   #              size = 14,
-  #   #              color = 'black'),
-  #   #            legend = list(x = 1.0, y = 0.6,
-  #   #                          font = list(
-  #   #                            family = "arial",
-  #   #                            size = 8,
-  #   #                            color = 'black')))## JGD 20190219
-  #   #   
-  #   # })
-  #   # 
-  #   # # Scatterplot of Previou Programmed FY vs Must Fund FY, Colored by Sponsor ## JGD 20190219
-  #   # output$descriptive4 <- renderPlotly({
-  #   #   g <- ggplot() +
-  #   #     geom_point(data=descriptiveData,
-  #   #                aes(x=jitter(previousProgram, factor = 1, amount = NULL),
-  #   #                    y=jitter(must_fund_fy, factor = 1, amount = NULL),
-  #   #                    color = pomSponsor,
-  #   #                    text = paste('Project: ', projectTitle,
-  #   #                                 '<br>Number: ', projectNumber,
-  #   #                                 '<br>Previous Program FY: ', previousProgram,
-  #   #                                 '<br>Must Fund FY: ', must_fund_fy))) +
-  #   #     xlab("Previously Programmed FY") + ylab("Must Fund FY") + labs(colour="") +
-  #   #     scale_x_continuous(breaks = seq(y, y+4, by = 1)) + xlim(y, y+4) +
-  #   #     scale_y_continuous(breaks = seq(y, y+4, by = 1)) + ylim(y, y+4) +
-  #   #     theme(panel.background = element_rect(fill = "lightgray",
-  #   #                                           colour = "black",
-  #   #                                           size = 0.5, linetype = "solid"))
-  #   #   ggplotly(g, tooltip = "text", dynamicTicks = FALSE)%>%
-  #   #     layout(title = 'Programmed (POM20) vs Must Fund (POM21)',
-  #   #            yaxis = list(zeroline = TRUE, showgrid = FALSE),
-  #   #            xaxis = list(zeroline = TRUE, showgrid = FALSE),
-  #   #            font = list(
-  #   #              family = "arial",
-  #   #              size = 14,
-  #   #              color = 'black'),
-  #   #            legend = list(x = 1.0, y = 0.6,
-  #   #                          font = list(
-  #   #                            family = "arial",
-  #   #                            size = 8,
-  #   #                            color = 'black')))
-  #   #   
-  #   # })
-  
-
-
-  
-  #   # #############################################
-  #   # # Make an LP
-  #   # #############################################
-  #   # lp <- make.lp(0, n)
-  #   # set.objfn(lp, vectorVariables) 
-  #   # lp.control(lp, sense = 'max') # Set to solve as maximize problem
-  #   # row.add.mode(lp,"on") 
-  #   # for (i in 1:nrow(Ax)){
-  #   #   add.constraint(lp,xt=c(Ax[i,]),type="<=",rhs=b[i])
-  #   # } # Add constraitns and make all <= equations
-  #   # row.add.mode(lp,"off")
-  #   # # print("test1")
-  #   # set.type(lp, columns = 1:n, type = "binary")
-  #   # RowNames <- paste("r", 1:nrow(Ax))
-  #   # ColNames <- paste("c", 1:n)
-  #   # dimnames(lp) <- list(RowNames, ColNames)
-  #   # set.bounds(lp, lower = rep(0,n))
-  #   # 
-  #   # # Print message that describes the number of variables and constraints in LP
-  #   # constraints <- nrow(Ax)
-  #   # output$lp_model <- renderPrint(cat("This is a linear program with", n, "variables and", constraints, "constraints." ))
-  #   # 
-  #   # lp2 <- lp
-  #   # 
-  #   # 
-  #   # controls <- lp.control(lp2, presolve = c("rows", "cols", "lindep"), improve = c("dualfeas", "thetagap"), mip.gap = 1.0e-12,
-  #   #                        obj.in.bas = FALSE,  verbose = "detailed", timeout = input$runtime)
-  #   # 
-  #   # controls
-  #   # 
     output$loadCheckmark <- renderImage({
       list(src = "./www/tick.png",
            contentType = "image/png",
