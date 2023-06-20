@@ -21,14 +21,6 @@ fluidPage(theme = "mystyle.css",
             sidebarMenu(
               menuItem("Instructions", tabName = "instructions", icon = icon("info-circle", lib = "font-awesome")),
               menuItem("Model", tabName = "model", icon = icon("cog", lib = "font-awesome")),
-              #     menuItem("Project Statistics", tabName = "projects", icon = icon("bar-chart", lib = "font-awesome")),
-              #     menuItem("Table: MPAT Solution", tabName = "datatable", icon = icon("table", lib = "font-awesome")),
-              #     menuItem("Table: Capability Sponsor Costs", tabName = "pom_sponsor_costs", icon = icon("table", lib = "font-awesome")),
-              #     menuItem("Chart: Capability Sponsors", tabName = "sponsor_chart", icon = icon("bar-chart", lib = "font-awesome")),
-              #     menuItem("Chart: MIS Programs", tabName = "mis_programs", icon = icon("bar-chart", lib = "font-awesome")),
-              #     menuItem("Chart: Project Counts", tabName = "project_counts", icon = icon("bar-chart", lib = "font-awesome")),
-              #     menuItem("Chart: Cost-Value", tabName = "cost_value_plot", icon = icon("bar-chart", lib = "font-awesome")),
-              #     menuItem("Summary Statistics", tabName = "statistics", icon = icon("file-text", lib = "font-awesome")),
               menuItem("Glossary of Data Fields", tabName = "glossary", icon = icon("question-circle", lib = "font-awesome"))
             ),
    
@@ -81,7 +73,7 @@ fluidPage(theme = "mystyle.css",
                                                    format = "NorthAmerican", width = NULL, align = "right"),
                                      numericInput("govWin", label = "GovWin Fit Score",
                                                   value = 0, min = 0, max = 100, step = 1)
-                                     # GovWin Fit Score uses NAICS codes, GovWin IQ Smart Tags, opportunity description/keywords, 
+                                     # NOTE: GovWin Fit Score uses NAICS codes, GovWin IQ Smart Tags, opportunity description/keywords, 
                                      # place of performance, and past history with an agency
                                    )
                                ),
