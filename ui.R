@@ -6,6 +6,7 @@ fluidPage(theme = "mystyle.css",
            zoom: 80%; /* Webkit browsers */
            }"),
           
+          #Github test
           ## Header ###
           header <- dashboardHeader(
             title = "i3 Pipeline ",
