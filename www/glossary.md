@@ -1,52 +1,22 @@
 ---
 title: "glossary"
 author: "Mark Zais"
-date: "October 15, 2018"
+date: "July 11, 2023"
 output: html_document
 ---
 
-### Glossary of Data Fields
+### Description of Statistics
 
-* **MIS Program:** Program category in the budget Management Information System.
+* **Receiver Operating Characteristic (ROC):** The ROC curve involves understanding the trade-off between the True Positive Rate (TPR) and the False Positive Rate (FPR) at different classification thresholds.
 
-* **POM Sponsor:** Name of Component that submitted a MILCON project.
+* **ROC Curve Shape:** The ROC curve is typically a plot of TPR (sensitivity/recall) on the y-axis against FPR (1 - specificity) on the x-axis. The curve represents the performance of the classification model at various decision thresholds. It's desirable for the ROC curve to be closer to the top-left corner, indicating higher TPR and lower FPR..
 
-* **CBPL Score:** Capabilities Based Program List score representing a prioritized list of each O&M, Procurement and RDT&E funding requirements.
+* **Area Under the Curve (AUC):** The AUC represents the overall performance of the model. It measures the area under the ROC curve and ranges between 0 and 1. A higher AUC indicates better discrimination power of the model, where 1 represents a perfect classifier and 0.5 represents a random classifier.
 
-* **Rank Score:** 1 to n rank score of programs submitted by Components.
+* **Precision:** Proportion of correctly predicted positive instances. (How many of the predicted positives are actually positive?)
 
-* **Cost:** Programmed Amount (PA) cost of a MILCON project, excluding lead (PDS, PND) and lag (CEQ, C4I) costs.
+* **Recall:** Proportion of actual positive instances correctly identified by the model. (How many of the actual positives were identified correctly?)
 
-* **Must Fund:** Must fund in a specified Fiscal Year (1 = Yes; 0 = No).
+* **Accuracy:** Overall correctness of predictions.	(How many of the predictions were correct?)
 
-* **Business Rule:** Alternative business rule to identify must fund projects (1 = Yes; 0 = No). Set all to zero if not used.
 
-* **Previous Program:** Fiscal year that a project was funded in previous budget cycle, if applicable.
-
-* **PDS:** Lead year of prospectus development study cost of the project (e.g. -2 if two years prior to actual project year).
-
-* **PDS_DOL:** Prospectus development study cost of the project.
-
-* **PND1:** Lead year of first planning and design cost of the project.
-
-* **PND1_DOL:** First planning and design cost of the project.
-
-* **PND2:** Lead year of second planning and design cost of the project.
-
-* **PND2_DOL:** Second planning and design cost of the project.
-
-* **CEQOM:** Lag year of collateral equipment operations and maintenance cost of the project .
-
-* **CEQOM_DOL:** Collateral equipment operations and maintenance cost of the project .
-
-* **CEQPROC:** Lag year of collateral equipment procurement cost of the project.
-
-* **CEQPROC_DOL:** Collateral equipment procurement cost of the project.
-
-* **C4IOM:** Lag year of command, control, communications, computing and information (C4I) cost of the project.
-
-* **C4IOM_DOL:** Command, control, communications, computing and information (C4I) cost of the project.
-
-* **C4IPROC:** Lag year of C4I procurement cost of the project.
-
-* **C4IPROC_DOL:** C4I procurement cost of the project.
